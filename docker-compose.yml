@@ -1,83 +1,44 @@
 version: '3.8'
 
+networks:
+  devsync-network:
+    driver: bridge
+
+volumes:
+  postgres-data:
+  redis-data:
+  jaeger-data:
+  prometheus-data:
+  grafana-data:
+
 services:
-  # PostgreSQL Database
+  # Core Infrastructure
   postgres:
     image: postgres:15-alpine
     container_name: devsync-postgres
     environment:
       POSTGRES_DB: devsync
       POSTGRES_USER: devsync
-      POSTGRES_PASSWORD: devsync_password
+      POSTGRES_PASSWORD: password
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - postgres-data:/var/lib/postgresql/data
     networks:
       - devsync-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U devsync -d devsync"]
+      test: ["CMD-SHELL", "pg_isready -U devsync"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  # Neo4j Graph Database
-  neo4j:
-    image: neo4j:5.15-community
-    container_name: devsync-neo4j
-    environment:
-      NEO4J_AUTH: neo4j/devsync_password
-      NEO4J_PLUGINS: '["apoc"]'
-      NEO4J_dbms_security_procedures_unrestricted: apoc.*
-      NEO4J_dbms_security_procedures_allowlist: apoc.*
-    ports:
-      - "7474:7474"
-      - "7687:7687"
-    volumes:
-      - neo4j_data:/data
-      - neo4j_logs:/logs
-      - neo4j_import:/var/lib/neo4j/import
-      - neo4j_plugins:/plugins
-    networks:
-      - devsync-network
-    healthcheck:
-      test: ["CMD", "cypher-shell", "-u", "neo4j", "-p", "devsync_password", "RETURN 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  # MongoDB
-  mongodb:
-    image: mongo:7.0
-    container_name: devsync-mongodb
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: devsync
-      MONGO_INITDB_ROOT_PASSWORD: devsync_password
-      MONGO_INITDB_DATABASE: devsync
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongodb_data:/data/db
-      - ./docker/mongodb/init.js:/docker-entrypoint-initdb.d/init.js:ro
-    networks:
-      - devsync-network
-    healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  # Redis
   redis:
-    image: redis:7.2-alpine
+    image: redis:7-alpine
     container_name: devsync-redis
     ports:
       - "6379:6379"
     volumes:
-      - redis_data:/data
-      - ./docker/redis/redis.conf:/usr/local/etc/redis/redis.conf
-    command: redis-server /usr/local/etc/redis/redis.conf
+      - redis-data:/data
     networks:
       - devsync-network
     healthcheck:
@@ -86,131 +47,292 @@ services:
       timeout: 5s
       retries: 5
 
-  # Backend API
-  backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    container_name: devsync-backend
-    environment:
-      NODE_ENV: development
-      PORT: 8000
-      DATABASE_URL: postgresql://devsync:devsync_password@postgres:5432/devsync
-      NEO4J_URI: bolt://neo4j:7687
-      NEO4J_USERNAME: neo4j
-      NEO4J_PASSWORD: devsync_password
-      MONGODB_URI: mongodb://devsync:devsync_password@mongodb:27017/devsync?authSource=admin
-      REDIS_URL: redis://redis:6379
-      JWT_SECRET: your-super-secret-jwt-key-change-in-production
-      JWT_REFRESH_SECRET: your-super-secret-refresh-key-change-in-production
-      OPENAI_API_KEY: ${OPENAI_API_KEY}
-      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
-      FRONTEND_URL: http://localhost:3000
-      BACKEND_URL: http://localhost:8000
-    ports:
-      - "8000:8000"
-    volumes:
-      - ./backend:/app
-      - /app/node_modules
-    depends_on:
-      postgres:
-        condition: service_healthy
-      neo4j:
-        condition: service_healthy
-      mongodb:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    networks:
-      - devsync-network
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
-  # Frontend
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    container_name: devsync-frontend
-    environment:
-      NEXT_PUBLIC_API_URL: http://localhost:8000
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-      - /app/.next
-    depends_on:
-      - backend
-    networks:
-      - devsync-network
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
-  # Prometheus (Monitoring)
-  prometheus:
-    image: prom/prometheus:latest
-    container_name: devsync-prometheus
-    ports:
-      - "9090:9090"
-    volumes:
-      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-      - prometheus_data:/prometheus
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--web.console.libraries=/etc/prometheus/console_libraries'
-      - '--web.console.templates=/etc/prometheus/consoles'
-      - '--storage.tsdb.retention.time=200h'
-      - '--web.enable-lifecycle'
-    networks:
-      - devsync-network
-
-  # Grafana (Monitoring Dashboard)
-  grafana:
-    image: grafana/grafana:latest
-    container_name: devsync-grafana
-    ports:
-      - "3001:3000"
-    environment:
-      GF_SECURITY_ADMIN_PASSWORD: admin
-    volumes:
-      - grafana_data:/var/lib/grafana
-      - ./docker/grafana/provisioning:/etc/grafana/provisioning
-    depends_on:
-      - prometheus
-    networks:
-      - devsync-network
-
-  # Jaeger (Distributed Tracing)
+  # Monitoring Infrastructure
   jaeger:
-    image: jaegertracing/all-in-one:latest
+    image: jaegertracing/all-in-one:1.45
     container_name: devsync-jaeger
     ports:
       - "16686:16686"
-      - "14268:14268"
+      - "6831:6831/udp"
     environment:
       COLLECTOR_OTLP_ENABLED: true
     networks:
       - devsync-network
 
-volumes:
-  postgres_data:
-  neo4j_data:
-  neo4j_logs:
-  neo4j_import:
-  neo4j_plugins:
-  mongodb_data:
-  redis_data:
-  prometheus_data:
-  grafana_data:
+  prometheus:
+    image: prom/prometheus:v2.44.0
+    container_name: devsync-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - prometheus-data:/prometheus
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    networks:
+      - devsync-network
 
-networks:
-  devsync-network:
-    driver: bridge
+  grafana:
+    image: grafana/grafana:10.0.0
+    container_name: devsync-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    volumes:
+      - grafana-data:/var/lib/grafana
+    networks:
+      - devsync-network
+
+  # DevSync Microservices
+  api-gateway:
+    build:
+      context: ./microservices/api-gateway
+      dockerfile: Dockerfile
+    container_name: devsync-api-gateway
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      JWT_SECRET: supersecretjwtkey
+      FRONTEND_URL: http://localhost:3001
+      AUTH_SERVICE_URL: http://auth-service:3001
+      AI_TRANSLATOR_SERVICE_URL: http://ai-translator-service:3002
+      API_CONNECTOR_SERVICE_URL: http://api-connector-service:3003
+      CODEGEN_SERVICE_URL: http://codegen-service:3004
+      PROJECT_SERVICE_URL: http://project-service:3005
+      NOTIFICATION_SERVICE_URL: http://notification-service:3006
+      STORAGE_SERVICE_URL: http://storage-service:3007
+      MONITORING_SERVICE_URL: http://monitoring-service:3008
+      TELEMETRY_ENABLED: "true"
+      JAEGER_AGENT_HOST: jaeger
+      JAEGER_AGENT_PORT: 6832
+      PROMETHEUS_PORT: 9464
+    depends_on:
+      - postgres
+      - redis
+      - jaeger
+      - prometheus
+    networks:
+      - devsync-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  auth-service:
+    build:
+      context: ./microservices/auth-service
+      dockerfile: Dockerfile
+    container_name: devsync-auth-service
+    ports:
+      - "3001:3001"
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      DATABASE_URL: postgresql://devsync:password@postgres:5432/devsync_auth
+      JWT_SECRET: supersecretjwtkey
+      JWT_REFRESH_SECRET: supersecretrefreshkey
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_DB: 1
+      FRONTEND_URL: http://localhost:3000
+      CORS_ORIGIN: http://localhost:3000,http://localhost:3001
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - devsync-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  ai-translator-service:
+    build:
+      context: ./microservices/ai-translator-service
+      dockerfile: Dockerfile
+    container_name: devsync-ai-translator-service
+    ports:
+      - "3002:3002"
+    environment:
+      NODE_ENV: production
+      PORT: 3002
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      AI_FALLBACK_ENABLED: "true"
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_DB: 2
+      CACHE_ENABLED: "true"
+      CACHE_TTL: 3600
+      MAX_INPUT_LENGTH: 10000
+      MAX_CONCURRENT_REQUESTS: 5
+    depends_on:
+      - redis
+    networks:
+      - devsync-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  api-connector-service:
+    build:
+      context: ./microservices/api-connector-service
+      dockerfile: Dockerfile
+    container_name: devsync-api-connector-service
+    ports:
+      - "3003:3003"
+    environment:
+      NODE_ENV: production
+      PORT: 3003
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_DB: 3
+    depends_on:
+      - redis
+    networks:
+      - devsync-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3003/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  codegen-service:
+    build:
+      context: ./microservices/codegen-service
+      dockerfile: Dockerfile
+    container_name: devsync-codegen-service
+    ports:
+      - "3004:3004"
+    environment:
+      NODE_ENV: production
+      PORT: 3004
+    networks:
+      - devsync-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3004/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  project-service:
+    build:
+      context: ./microservices/project-service
+      dockerfile: Dockerfile
+    container_name: devsync-project-service
+    ports:
+      - "3005:3005"
+    environment:
+      NODE_ENV: production
+      PORT: 3005
+      DATABASE_URL: postgresql://devsync:password@postgres:5432/devsync_projects
+    depends_on:
+      - postgres
+    networks:
+      - devsync-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3005/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  notification-service:
+    build:
+      context: ./microservices/notification-service
+      dockerfile: Dockerfile
+    container_name: devsync-notification-service
+    ports:
+      - "3006:3006"
+    environment:
+      NODE_ENV: production
+      PORT: 3006
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_DB: 4
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASS: ${SMTP_PASS}
+      SLACK_BOT_TOKEN: ${SLACK_BOT_TOKEN}
+    depends_on:
+      - redis
+    networks:
+      - devsync-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3006/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  storage-service:
+    build:
+      context: ./microservices/storage-service
+      dockerfile: Dockerfile
+    container_name: devsync-storage-service
+    ports:
+      - "3007:3007"
+    environment:
+      NODE_ENV: production
+      PORT: 3007
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_REGION: ${AWS_REGION}
+      S3_BUCKET: ${S3_BUCKET}
+    volumes:
+      - ./uploads:/app/uploads
+    networks:
+      - devsync-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3007/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  monitoring-service:
+    build:
+      context: ./microservices/monitoring-service
+      dockerfile: Dockerfile
+    container_name: devsync-monitoring-service
+    ports:
+      - "3008:3008"
+    environment:
+      NODE_ENV: production
+      PORT: 3008
+      PROMETHEUS_URL: http://prometheus:9090
+      JAEGER_URL: http://jaeger:16686
+    depends_on:
+      - prometheus
+      - jaeger
+    networks:
+      - devsync-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3008/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Frontend (Next.js)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: devsync-frontend
+    ports:
+      - "3001:3000"
+    environment:
+      NODE_ENV: production
+      NEXT_PUBLIC_API_URL: http://localhost:3000
+      NEXT_PUBLIC_AUTH_URL: http://localhost:3001
+      NEXT_PUBLIC_AI_TRANSLATOR_URL: http://localhost:3002
+    networks:
+      - devsync-network

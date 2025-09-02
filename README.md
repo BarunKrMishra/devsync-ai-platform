@@ -1,172 +1,421 @@
-# DevSync — From Requirement to Integration in Days
+# DevSync - From Requirement to Integration in Days
 
-**AI Requirement Translator + Universal API Connector**
+> AI-Powered Requirement Translator + Universal API Connector
 
-*"Define. Generate. Integrate."*
-
-## 🚀 Overview
-
-DevSync transforms business requirements into production-ready applications in days, not weeks. Our platform combines AI-powered requirement translation with universal API integration capabilities.
-
-### Key Features
-
-- **AI Requirement Translator**: Natural language → ERD, OpenAPI, test cases, boilerplate code
-- **Universal API Connector**: One SDK to integrate 100+ services with auth/retries/monitoring built-in
-- **Multi-Stack Support**: Node.js, Laravel, Java, Python templates
-- **Enterprise Security**: SSO/SAML, secrets vault, audit logs, role-based permissions
-
-## 🏗️ Architecture
-
-```
-┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│   Frontend      │    │   Backend        │    │   Databases     │
-│   (Next.js)     │◄──►│   Services       │◄──►│   (Multi-DB)    │
-│                 │    │                  │    │                 │
-│ • Dashboard     │    │ • AI Translator  │    │ • Postgres      │
-│ • ERD Viewer    │    │ • CodeGen        │    │ • Neo4j         │
-│ • API Monitor   │    │ • API Connector  │    │ • MongoDB       │
-│ • Project Mgmt  │    │ • Auth Service   │    │ • Redis         │
-└─────────────────┘    └──────────────────┘    └─────────────────┘
-```
-
-## 🛠️ Tech Stack
-
-### Frontend
-- **Next.js 14** with App Router
-- **TypeScript** for type safety
-- **Tailwind CSS** for styling
-- **React Query** for state management
-- **React Flow** for ERD visualization
-
-### Backend
-- **Node.js** with Express/Fastify
-- **TypeScript** for type safety
-- **OpenAI API** for AI translation
-- **Prisma** for database ORM
-- **JWT** for authentication
-- **OpenTelemetry** for observability
-
-### Databases
-- **PostgreSQL** - Core application data
-- **Neo4j** - ERD relationships and graph data
-- **MongoDB** - Logs and unstructured data
-- **Redis** - Caching and queues
+Transform natural language requirements into production-ready applications with DevSync's intelligent microservices platform.
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js 18+ 
 - Docker & Docker Compose
-- OpenAI API key
+- Node.js 18+
+- Git
 
 ### Installation
 
-1. **Clone and install dependencies:**
-```bash
-git clone <repository-url>
-cd devsync
-npm run install:all
-```
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/BarunKrMishra/devsync-project.git
+   cd devsync-project
+   ```
 
 2. **Set up environment variables:**
+   ```bash
+   cp env.example .env
+   # Edit .env with your API keys and configuration
+   ```
+
+3. **Start the entire platform:**
+   ```bash
+   docker-compose up -d
+   ```
+
+4. **Access the services:**
+   - **Frontend**: http://localhost:3000
+   - **API Gateway**: http://localhost:3000
+   - **Documentation**: http://localhost:3000/api-docs
+
+## 🏗️ Architecture
+
+DevSync is built as a production-ready microservices platform:
+
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────────────┐
+│   Frontend      │    │   API Gateway   │    │    Microservices        │
+│   (Next.js)     │◄──►│   (Port 3000)   │◄──►│ Auth       (Port 3001)  │
+│                 │    │                 │    │ AI Trans   (Port 3002)  │
+└─────────────────┘    │ • Authentication│    │ API Conn   (Port 3003)  │
+                       │ • Rate Limiting │    │ CodeGen    (Port 3004)  │
+                       │ • Load Balancer │    │ Project    (Port 3005)  │
+                       │ • Circuit Break │    │ Notify     (Port 3006)  │
+                       │ • Health Checks │    │ Storage    (Port 3007)  │
+                       │ • Observability │    │ Monitor    (Port 3008)  │
+                       └─────────────────┘    └─────────────────────────┘
+                                │
+                                ▼
+                       ┌─────────────────┐
+                       │ Infrastructure  │
+                       │ • PostgreSQL    │
+                       │ • Redis         │
+                       │ • Jaeger        │
+                       │ • Prometheus    │
+                       │ • Grafana       │
+                       └─────────────────┘
+```
+
+## 🔧 Services Overview
+
+### Core Services
+
+| Service | Port | Description | Status |
+|---------|------|-------------|--------|
+| **API Gateway** | 3000 | Entry point, routing, auth, rate limiting | ✅ Production Ready |
+| **Auth Service** | 3001 | User management, JWT, 2FA, OAuth | ✅ Production Ready |
+| **AI Translator** | 3002 | Natural language → Technical specs | ✅ Production Ready |
+| **API Connector** | 3003 | Universal API integration platform | ✅ Production Ready |
+| **Code Generator** | 3004 | Multi-framework code generation | ✅ Production Ready |
+| **Project Service** | 3005 | Project management & collaboration | ✅ Production Ready |
+| **Notification** | 3006 | Email, Slack, real-time notifications | ✅ Production Ready |
+| **Storage Service** | 3007 | File upload, processing, CDN | ✅ Production Ready |
+| **Monitoring** | 3008 | Health checks, metrics, alerting | ✅ Production Ready |
+
+### Infrastructure Services
+
+| Service | Port | Description |
+|---------|------|-------------|
+| **PostgreSQL** | 5432 | Primary database |
+| **Redis** | 6379 | Cache & session store |
+| **Jaeger** | 16686 | Distributed tracing |
+| **Prometheus** | 9090 | Metrics collection |
+| **Grafana** | 3000 | Monitoring dashboards |
+
+## 🌟 Key Features
+
+### 🤖 AI-Powered Translation
+- **Natural Language Processing**: Convert requirements into technical specifications
+- **Multi-Provider Support**: OpenAI GPT-4 & Anthropic Claude
+- **Intelligent Fallback**: Automatic provider switching
+- **Comprehensive Output**: ERDs, APIs, tests, code, recommendations
+
+### 🔌 Universal API Connector
+- **100+ Service Integrations**: Slack, GitHub, Jira, Google, AWS, Stripe, etc.
+- **OAuth 2.0 Support**: Secure authentication flows
+- **Rate Limiting**: Built-in protection and retry logic
+- **Webhook Management**: Real-time event handling
+
+### 🛡️ Enterprise Security
+- **JWT Authentication**: Access & refresh token management
+- **Two-Factor Authentication**: TOTP with QR codes
+- **Role-Based Access Control**: Granular permissions
+- **Audit Logging**: Complete security event tracking
+- **Rate Limiting**: DDoS and brute force protection
+
+### 📊 Observability
+- **Distributed Tracing**: End-to-end request tracking with Jaeger
+- **Metrics Collection**: Performance monitoring with Prometheus
+- **Health Checks**: Automated service health monitoring
+- **Centralized Logging**: Structured logging across all services
+
+## 🚀 Development
+
+### Local Development
+
+1. **Start core infrastructure:**
+   ```bash
+   docker-compose up postgres redis jaeger prometheus grafana -d
+   ```
+
+2. **Run services individually:**
+   ```bash
+   # Terminal 1 - API Gateway
+   cd microservices/api-gateway
+   npm install && npm run dev
+
+   # Terminal 2 - Auth Service
+   cd microservices/auth-service
+   npm install && npm run dev
+
+   # Terminal 3 - AI Translator
+   cd microservices/ai-translator-service
+   npm install && npm run dev
+   ```
+
+3. **Run frontend:**
+   ```bash
+   cd frontend
+   npm install && npm run dev
+   ```
+
+### Testing
+
 ```bash
-cp .env.example .env
-# Edit .env with your configuration
+# Run all tests
+npm test
+
+# Test specific service
+cd microservices/auth-service
+npm test
+
+# Integration tests
+npm run test:integration
+
+# E2E tests
+npm run test:e2e
 ```
 
-3. **Start the development environment:**
+### Linting & Code Quality
+
 ```bash
-# Start all services
-npm run dev
+# Lint all services
+npm run lint
 
-# Or start individually
-npm run dev:frontend  # Frontend on http://localhost:3000
-npm run dev:backend   # Backend on http://localhost:8000
+# Fix linting issues
+npm run lint:fix
+
+# Type checking
+npm run type-check
 ```
 
-4. **Access the application:**
-- Frontend: http://localhost:3000
-- Backend API: http://localhost:8000
-- API Documentation: http://localhost:8000/docs
+## 📦 Deployment
 
-## 📋 Development Workflow
+### Production Deployment
 
-### Project Structure
-```
-devsync/
-├── frontend/          # Next.js frontend application
-├── backend/           # Node.js backend services
-├── shared/            # Shared types and utilities
-├── docs/              # Documentation
-└── docker/            # Docker configurations
-```
+1. **Set production environment variables:**
+   ```bash
+   cp env.example .env.production
+   # Configure production values
+   ```
 
-### Key Commands
+2. **Build and deploy:**
+   ```bash
+   docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+   ```
+
+3. **Scale services:**
+   ```bash
+   docker-compose up -d --scale auth-service=3 --scale ai-translator-service=2
+   ```
+
+### Kubernetes Deployment
+
 ```bash
-npm run dev              # Start all services in development
-npm run build            # Build all applications
-npm run test             # Run all tests
-npm run lint             # Lint all code
-npm run type-check       # TypeScript type checking
+# Deploy to Kubernetes
+kubectl apply -f k8s/
+
+# Monitor deployment
+kubectl get pods -l app=devsync
+
+# Check service health
+kubectl get svc
 ```
 
-## 🎯 Core Modules
+## 🔧 Configuration
 
-### 1. AI Requirement Translator
-- Natural language processing
-- ERD generation and validation
-- OpenAPI specification creation
-- Test case generation
-- Code boilerplate generation
+### Environment Variables
 
-### 2. Universal API Connector
-- OAuth 2.0 flow management
-- Retry logic with exponential backoff
-- Rate limiting and circuit breakers
-- Real-time monitoring and alerting
-- 100+ pre-built connectors
+Key configuration options:
 
-### 3. Code Generation Engine
-- Multi-stack template system
-- Customizable code templates
-- Dependency management
-- Build and deployment scripts
+```bash
+# AI Services
+OPENAI_API_KEY=your_openai_key
+ANTHROPIC_API_KEY=your_anthropic_key
 
-## 🔐 Security & Compliance
+# Database
+DATABASE_URL=postgresql://user:pass@host:port/db
 
-- **Authentication**: JWT with refresh tokens
-- **Authorization**: Role-based access control (RBAC)
-- **Data Protection**: Encryption at rest and in transit
-- **Audit Logging**: Comprehensive activity tracking
-- **Compliance**: SOC2 Type II ready
+# Authentication
+JWT_SECRET=your_super_secret_key
+JWT_REFRESH_SECRET=your_refresh_secret
+
+# Email
+SMTP_HOST=smtp.gmail.com
+SMTP_USER=your_email@domain.com
+SMTP_PASS=your_password
+
+# AWS (for storage)
+AWS_ACCESS_KEY_ID=your_aws_key
+AWS_SECRET_ACCESS_KEY=your_aws_secret
+S3_BUCKET=your_bucket_name
+```
+
+### Service Configuration
+
+Each microservice can be configured independently:
+
+- **API Gateway**: Routing rules, rate limits, circuit breaker settings
+- **Auth Service**: Token expiry, 2FA settings, OAuth providers
+- **AI Translator**: Model selection, timeout, fallback behavior
+- **API Connector**: Provider configurations, webhook settings
 
 ## 📊 Monitoring & Observability
 
-- **Metrics**: Prometheus + Grafana
-- **Logging**: Structured logging with correlation IDs
-- **Tracing**: OpenTelemetry distributed tracing
-- **Alerting**: Slack/email notifications
-- **Health Checks**: Comprehensive service health monitoring
+### Dashboards
+
+- **Grafana**: http://localhost:3000 (admin/admin)
+- **Jaeger**: http://localhost:16686
+- **Prometheus**: http://localhost:9090
+
+### Health Checks
+
+```bash
+# Check all services
+curl http://localhost:3000/health
+
+# Individual service health
+curl http://localhost:3001/health  # Auth Service
+curl http://localhost:3002/health  # AI Translator
+curl http://localhost:3003/health  # API Connector
+```
+
+### Metrics
+
+```bash
+# Prometheus metrics
+curl http://localhost:3008/metrics
+
+# Custom application metrics
+curl http://localhost:3000/api/metrics
+```
 
 ## 🤝 Contributing
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+1. **Fork the repository**
+2. **Create a feature branch**: `git checkout -b feature/amazing-feature`
+3. **Commit changes**: `git commit -m 'Add amazing feature'`
+4. **Push to branch**: `git push origin feature/amazing-feature`
+5. **Open a Pull Request**
 
-## 📄 License
+### Development Guidelines
+
+- Follow TypeScript best practices
+- Write comprehensive tests
+- Update documentation
+- Follow semantic versioning
+- Use conventional commits
+
+## 📄 API Documentation
+
+### Authentication Service
+- `POST /auth/register` - User registration
+- `POST /auth/login` - User login
+- `POST /auth/refresh` - Refresh access token
+- `GET /auth/verify` - Verify JWT token
+
+### AI Translator Service
+- `POST /translate` - Generic translation
+- `POST /translate/requirements` - Requirement analysis
+- `POST /translate/api-spec` - API specification generation
+- `POST /translate/database` - Database design
+- `POST /translate/tests` - Test case generation
+- `POST /translate/code` - Code generation
+
+### API Connector Service
+- `GET /providers` - List available providers
+- `POST /connect` - Create API connection
+- `GET /connections` - List user connections
+- `POST /webhook` - Webhook endpoint
+
+## 🔒 Security
+
+### Security Features
+
+- **JWT Authentication** with refresh tokens
+- **Two-Factor Authentication** (TOTP)
+- **Role-Based Access Control** (RBAC)
+- **Rate Limiting** on all endpoints
+- **CORS Protection** with configurable origins
+- **Helmet Security Headers**
+- **Input Validation** and sanitization
+- **Audit Logging** for security events
+
+### Security Best Practices
+
+- Regular security audits
+- Dependency vulnerability scanning
+- Environment variable encryption
+- Database connection encryption
+- API rate limiting
+- HTTPS in production
+
+## 📈 Performance
+
+### Optimization Features
+
+- **Redis Caching** for frequently accessed data
+- **Connection Pooling** for database connections
+- **Compression** for API responses
+- **CDN Integration** for static assets
+- **Circuit Breaker** pattern for external API calls
+- **Load Balancing** across service instances
+
+### Performance Monitoring
+
+- Response time tracking
+- Memory usage monitoring
+- CPU utilization metrics
+- Database query performance
+- Cache hit/miss ratios
+
+## 🆘 Troubleshooting
+
+### Common Issues
+
+1. **Service won't start**
+   ```bash
+   # Check logs
+   docker-compose logs service-name
+   
+   # Check health
+   curl http://localhost:port/health
+   ```
+
+2. **Database connection issues**
+   ```bash
+   # Check PostgreSQL
+   docker-compose logs postgres
+   
+   # Test connection
+   docker exec -it devsync-postgres psql -U devsync -d devsync
+   ```
+
+3. **Redis connection issues**
+   ```bash
+   # Check Redis
+   docker-compose logs redis
+   
+   # Test connection
+   docker exec -it devsync-redis redis-cli ping
+   ```
+
+### Getting Help
+
+- **Documentation**: Check service-specific README files
+- **Logs**: Use `docker-compose logs service-name`
+- **Health Checks**: Use `/health` endpoints
+- **Issues**: Create a GitHub issue with detailed information
+
+## 📊 Project Stats
+
+- **9 Microservices**: Production-ready, containerized
+- **100+ API Integrations**: Universal connector platform
+- **Enterprise Security**: JWT, 2FA, RBAC, audit logging
+- **Full Observability**: Tracing, metrics, logging, health checks
+- **Cloud Native**: Docker, Kubernetes ready
+- **Production Ready**: CI/CD, monitoring, scaling
+
+## 📝 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🆘 Support
+## 🙏 Acknowledgments
 
-- **Documentation**: [docs.devsync.com](https://docs.devsync.com)
-- **Community**: [Discord](https://discord.gg/devsync)
-- **Issues**: [GitHub Issues](https://github.com/devsync/issues)
-- **Email**: support@devsync.com
+- OpenAI for GPT-4 API
+- Anthropic for Claude API
+- The amazing open-source community
+- All contributors and supporters
 
 ---
 
 **Built with ❤️ by the DevSync Team**
+
+Transform your ideas into reality with DevSync - From Requirement to Integration in Days!

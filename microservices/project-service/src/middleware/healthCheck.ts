@@ -1,0 +1,1 @@
+import { Request, Response } from 'express';nnexport const healthCheck = (req: Request, res: Response) => {n  res.status(200).json({n    success: true,n    message: 'Project Service is healthy',n    timestamp: new Date().toISOString(),n    service: 'project-service',n    version: '1.0.0'n  });n};
