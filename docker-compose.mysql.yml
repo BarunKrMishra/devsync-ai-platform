@@ -9,7 +9,7 @@ volumes:
   redis-data:
   jaeger-data:
   prometheus-data:
-  grafana-data
+  grafana-data:
 
 services:
   # Core Infrastructure - Using MySQL instead of PostgreSQL
