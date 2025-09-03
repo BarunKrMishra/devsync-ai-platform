@@ -1,0 +1,114 @@
+version: '3.8'
+
+# Development overrides for docker-compose.yml
+# This file extends the main docker-compose.yml with development-specific configurations
+
+services:
+  # API Gateway - Development mode
+  api-gateway:
+    environment:
+      - NODE_ENV=development
+      - LOG_LEVEL=debug
+    volumes:
+      - ./microservices/api-gateway:/app
+      - /app/node_modules
+    command: npm run dev
+
+  # Auth Service - Development mode
+  auth-service:
+    environment:
+      - NODE_ENV=development
+      - LOG_LEVEL=debug
+    volumes:
+      - ./microservices/auth-service:/app
+      - /app/node_modules
+    command: npm run dev
+
+  # AI Translator Service - Development mode
+  ai-translator-service:
+    environment:
+      - NODE_ENV=development
+      - LOG_LEVEL=debug
+    volumes:
+      - ./microservices/ai-translator-service:/app
+      - /app/node_modules
+    command: npm run dev
+
+  # API Connector Service - Development mode
+  api-connector-service:
+    environment:
+      - NODE_ENV=development
+      - LOG_LEVEL=debug
+    volumes:
+      - ./microservices/api-connector-service:/app
+      - /app/node_modules
+    command: npm run dev
+
+  # Code Generation Service - Development mode
+  codegen-service:
+    environment:
+      - NODE_ENV=development
+      - LOG_LEVEL=debug
+    volumes:
+      - ./microservices/codegen-service:/app
+      - /app/node_modules
+    command: npm run dev
+
+  # Project Service - Development mode
+  project-service:
+    environment:
+      - NODE_ENV=development
+      - LOG_LEVEL=debug
+    volumes:
+      - ./microservices/project-service:/app
+      - /app/node_modules
+    command: npm run dev
+
+  # Notification Service - Development mode
+  notification-service:
+    environment:
+      - NODE_ENV=development
+      - LOG_LEVEL=debug
+    volumes:
+      - ./microservices/notification-service:/app
+      - /app/node_modules
+    command: npm run dev
+
+  # Storage Service - Development mode
+  storage-service:
+    environment:
+      - NODE_ENV=development
+      - LOG_LEVEL=debug
+    volumes:
+      - ./microservices/storage-service:/app
+      - /app/node_modules
+    command: npm run dev
+
+  # Monitoring Service - Development mode
+  monitoring-service:
+    environment:
+      - NODE_ENV=development
+      - LOG_LEVEL=debug
+    volumes:
+      - ./microservices/monitoring-service:/app
+      - /app/node_modules
+    command: npm run dev
+
+  # PostgreSQL - Development with persistent data
+  postgres:
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=devsync_db
+      - POSTGRES_USER=devsync_user
+      - POSTGRES_PASSWORD=devsync_password
+
+  # Redis - Development with persistent data
+  redis:
+    volumes:
+      - redis_dev_data:/data
+    command: redis-server --appendonly yes
+
+volumes:
+  postgres_dev_data:
+  redis_dev_data:
