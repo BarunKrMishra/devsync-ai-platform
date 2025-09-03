@@ -56,7 +56,7 @@ export class CodeGenerationService {
       const templateData = this.prepareTemplateData(request);
       
       // Generate files
-      const files = await this.generateFiles(template, templateData, request);
+      const files = await this.generateFiles(template as any, templateData, request);
       
       const responseTime = Date.now() - startTime;
       
@@ -406,7 +406,7 @@ export class {{pascalCase name}} {
   private async createArchive(files: Array<{ name: string; content: string; path: string }>, format: string): Promise<Buffer> {
     return new Promise((resolve, reject) => {
       const chunks: Buffer[] = [];
-      const archive = archiver(format, { zlib: { level: 9 } });
+      const archive = archiver(format as any, { zlib: { level: 9 } });
 
       archive.on('data', (chunk) => chunks.push(chunk));
       archive.on('end', () => resolve(Buffer.concat(chunks)));

@@ -24,10 +24,10 @@ router.post('/generate', async (req: Request, res: Response) => {
       return res.status(400).json(response);
     }
 
-    res.json(response);
+    return res.json(response);
   } catch (error: any) {
     logger.error('Code generation failed', { error: error.message });
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: error.message
     });
@@ -51,10 +51,10 @@ router.post('/download', async (req: Request, res: Response) => {
     
     res.setHeader('Content-Type', 'application/zip');
     res.setHeader('Content-Disposition', `attachment; filename="${request.name}-${request.template}.zip"`);
-    res.send(archiveBuffer);
+    return res.send(archiveBuffer);
   } catch (error: any) {
     logger.error('Code download failed', { error: error.message });
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: error.message
     });
@@ -66,7 +66,7 @@ router.get('/frameworks', (req: Request, res: Response) => {
   try {
     const frameworks = codegenService.getSupportedFrameworks();
     
-    res.json({
+    return res.json({
       success: true,
       data: {
         frameworks,
@@ -76,7 +76,7 @@ router.get('/frameworks', (req: Request, res: Response) => {
     });
   } catch (error: any) {
     logger.error('Failed to get supported frameworks', { error: error.message });
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: error.message
     });
@@ -96,7 +96,7 @@ router.get('/frameworks/:framework', (req: Request, res: Response) => {
       });
     }
     
-    res.json({
+    return res.json({
       success: true,
       data: {
         framework,
@@ -106,7 +106,7 @@ router.get('/frameworks/:framework', (req: Request, res: Response) => {
     });
   } catch (error: any) {
     logger.error('Failed to get framework info', { error: error.message });
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: error.message
     });
@@ -126,7 +126,7 @@ router.get('/frameworks/:framework/templates', (req: Request, res: Response) => 
       });
     }
     
-    res.json({
+    return res.json({
       success: true,
       data: {
         framework,
@@ -137,7 +137,7 @@ router.get('/frameworks/:framework/templates', (req: Request, res: Response) => 
     });
   } catch (error: any) {
     logger.error('Failed to get templates', { error: error.message });
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: error.message
     });
@@ -174,7 +174,7 @@ router.post('/batch', async (req: Request, res: Response) => {
       error: result.status === 'rejected' ? result.reason.message : null
     }));
 
-    res.json({
+    return res.json({
       success: true,
       data: {
         results,
@@ -186,7 +186,7 @@ router.post('/batch', async (req: Request, res: Response) => {
     });
   } catch (error: any) {
     logger.error('Batch code generation failed', { error: error.message });
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: error.message
     });
