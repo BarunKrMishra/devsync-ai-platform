@@ -75,10 +75,10 @@ scrape_configs:
     metrics_path: /metrics
     scrape_interval: 15s
 
-  # PostgreSQL Exporter (if installed)
-  - job_name: 'postgres'
+  # MySQL Exporter (if installed)
+  - job_name: 'mysql'
     static_configs:
-      - targets: ['postgres-exporter:9187']
+      - targets: ['mysql-exporter:9104']
     scrape_interval: 30s
 
   # Redis Exporter (if installed)

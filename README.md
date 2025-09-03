@@ -55,7 +55,7 @@ DevSync is built as a production-ready microservices platform:
                                 ▼
                        ┌─────────────────┐
                        │ Infrastructure  │
-                       │ • PostgreSQL    │
+                       │ • MySQL         │
                        │ • Redis         │
                        │ • Jaeger        │
                        │ • Prometheus    │
@@ -83,7 +83,7 @@ DevSync is built as a production-ready microservices platform:
 
 | Service | Port | Description |
 |---------|------|-------------|
-| **PostgreSQL** | 5432 | Primary database |
+| **MySQL** | 3306 | Primary database |
 | **Redis** | 6379 | Cache & session store |
 | **Jaeger** | 16686 | Distributed tracing |
 | **Prometheus** | 9090 | Metrics collection |
@@ -122,7 +122,7 @@ DevSync is built as a production-ready microservices platform:
 
 1. **Start core infrastructure:**
    ```bash
-   docker-compose up postgres redis jaeger prometheus grafana -d
+   docker-compose up mysql redis jaeger prometheus grafana -d
    ```
 
 2. **Run services individually:**
@@ -221,7 +221,7 @@ OPENAI_API_KEY=your_openai_key
 ANTHROPIC_API_KEY=your_anthropic_key
 
 # Database
-DATABASE_URL=postgresql://user:pass@host:port/db
+DATABASE_URL=mysql://user:pass@host:port/db
 
 # Authentication
 JWT_SECRET=your_super_secret_key
@@ -371,11 +371,11 @@ curl http://localhost:3000/api/metrics
 
 2. **Database connection issues**
    ```bash
-   # Check PostgreSQL
-   docker-compose logs postgres
+   # Check MySQL
+   docker-compose logs mysql
    
    # Test connection
-   docker exec -it devsync-postgres psql -U devsync -d devsync
+   docker exec -it devsync-mysql mysql -u devsync -p devsync
    ```
 
 3. **Redis connection issues**

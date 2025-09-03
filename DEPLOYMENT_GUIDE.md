@@ -135,7 +135,7 @@ NODE_ENV=production
 FRONTEND_URL=https://your-domain.com
 
 # Database (use strong passwords)
-DATABASE_URL=postgresql://devsync_user:STRONG_PASSWORD@postgres:5432/devsync_db
+DATABASE_URL=mysql://devsync_user:STRONG_PASSWORD@mysql:3306/devsync_db
 
 # JWT secrets (generate strong ones)
 JWT_SECRET=your_production_jwt_secret_here
@@ -211,10 +211,10 @@ docker-compose pull
 docker-compose up -d --build
 
 # Backup database
-docker-compose exec postgres pg_dump -U devsync_user devsync_db > backup.sql
+docker-compose exec mysql mysqldump -u devsync_user -p devsync_db > backup.sql
 
 # Restore database
-docker-compose exec -T postgres psql -U devsync_user devsync_db < backup.sql
+docker-compose exec -T mysql mysql -u devsync_user -p devsync_db < backup.sql
 ```
 
 ### Health checks:
@@ -259,11 +259,11 @@ curl http://10.0.0.199:3002/health
 
 4. **Database connection issues**:
    ```bash
-   # Check PostgreSQL logs
-   docker-compose logs postgres
+   # Check MySQL logs
+   docker-compose logs mysql
    
    # Connect to database
-   docker-compose exec postgres psql -U devsync_user -d devsync_db
+   docker-compose exec mysql mysql -u devsync_user -p devsync_db
    ```
 
 ## 📈 Performance Optimization
@@ -282,12 +282,11 @@ curl http://10.0.0.199:3002/health
 
 2. **Database optimization**:
    ```bash
-   # Tune PostgreSQL
-   docker-compose exec postgres psql -U devsync_user -d devsync_db -c "
-   ALTER SYSTEM SET shared_buffers = '256MB';
-   ALTER SYSTEM SET effective_cache_size = '1GB';
-   ALTER SYSTEM SET maintenance_work_mem = '64MB';
-   SELECT pg_reload_conf();
+   # Tune MySQL
+   docker-compose exec mysql mysql -u devsync_user -p devsync_db -e "
+   SET GLOBAL innodb_buffer_pool_size = 256*1024*1024;
+   SET GLOBAL innodb_log_file_size = 64*1024*1024;
+   SET GLOBAL max_connections = 200;
    "
    ```
 

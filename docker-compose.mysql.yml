@@ -9,10 +9,10 @@ volumes:
   redis-data:
   jaeger-data:
   prometheus-data:
-  grafana-data:
+  grafana-data
 
 services:
-  # Core Infrastructure
+  # Core Infrastructure - Using MySQL instead of PostgreSQL
   mysql:
     image: mysql:8.0
     container_name: devsync-mysql
@@ -322,19 +322,3 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
-
-  # Frontend (Next.js)
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    container_name: devsync-frontend
-    ports:
-      - "3001:3000"
-    environment:
-      NODE_ENV: production
-      NEXT_PUBLIC_API_URL: http://localhost:3000
-      NEXT_PUBLIC_AUTH_URL: http://localhost:3001
-      NEXT_PUBLIC_AI_TRANSLATOR_URL: http://localhost:3002
-    networks:
-      - devsync-network

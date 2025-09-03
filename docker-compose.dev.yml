@@ -94,14 +94,15 @@ services:
       - /app/node_modules
     command: npm run dev
 
-  # PostgreSQL - Development with persistent data
-  postgres:
+  # MySQL - Development with persistent data
+  mysql:
     volumes:
-      - postgres_dev_data:/var/lib/postgresql/data
+      - mysql_dev_data:/var/lib/mysql
     environment:
-      - POSTGRES_DB=devsync_db
-      - POSTGRES_USER=devsync_user
-      - POSTGRES_PASSWORD=devsync_password
+      - MYSQL_DATABASE=devsync_db
+      - MYSQL_USER=devsync_user
+      - MYSQL_PASSWORD=devsync_password
+      - MYSQL_ROOT_PASSWORD=rootpassword
 
   # Redis - Development with persistent data
   redis:
@@ -110,5 +111,5 @@ services:
     command: redis-server --appendonly yes
 
 volumes:
-  postgres_dev_data:
+  mysql_dev_data:
   redis_dev_data:

@@ -69,7 +69,7 @@ DevSync will be transformed into a production-ready microservices platform with 
 - **Service Discovery**: Consul/Eureka
 - **Message Queue**: RabbitMQ/Apache Kafka
 - **Cache**: Redis Cluster
-- **Database**: PostgreSQL (primary), MongoDB (logs), Neo4j (relationships)
+- **Database**: MySQL (primary), MongoDB (logs), Neo4j (relationships)
 - **Load Balancer**: Nginx/HAProxy
 - **Container Orchestration**: Kubernetes/Docker Swarm
 
