@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import logger from '../config/logger';
+import { logger } from '../config/logger';
 
 const router = Router();
 
@@ -18,7 +18,7 @@ router.post('/email', async (req: Request, res: Response) => {
     // TODO: Implement email sending logic
     logger.info('Email notification sent', { to, subject });
     
-    res.json({
+    return res.json({
       success: true,
       data: {
         message: 'Email sent successfully',
@@ -29,7 +29,7 @@ router.post('/email', async (req: Request, res: Response) => {
     });
   } catch (error: any) {
     logger.error('Failed to send email', { error: error.message });
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: error.message
     });
@@ -51,7 +51,7 @@ router.post('/slack', async (req: Request, res: Response) => {
     // TODO: Implement Slack notification logic
     logger.info('Slack notification sent', { channel, message });
     
-    res.json({
+    return res.json({
       success: true,
       data: {
         message: 'Slack notification sent successfully',
@@ -61,7 +61,7 @@ router.post('/slack', async (req: Request, res: Response) => {
     });
   } catch (error: any) {
     logger.error('Failed to send Slack notification', { error: error.message });
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: error.message
     });
@@ -83,7 +83,7 @@ router.post('/realtime', async (req: Request, res: Response) => {
     // TODO: Implement real-time notification logic
     logger.info('Real-time notification sent', { room, event });
     
-    res.json({
+    return res.json({
       success: true,
       data: {
         message: 'Real-time notification sent successfully',
@@ -94,7 +94,7 @@ router.post('/realtime', async (req: Request, res: Response) => {
     });
   } catch (error: any) {
     logger.error('Failed to send real-time notification', { error: error.message });
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: error.message
     });
