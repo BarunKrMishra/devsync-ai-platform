@@ -1,1 +1,39 @@
-import { Request, Response, NextFunction } from 'express';nimport logger from '../config/logger';nnexport interface ApiError extends Error {n  statusCode?: number;n  isOperational?: boolean;n}nnexport const errorHandler = (n  error: ApiError,n  req: Request,n  res: Response,n  next: NextFunctionn) => {n  const statusCode = error.statusCode || 500;n  const message = error.message || 'Internal Server Error';nn  logger.error('Project Service Error:', {n    error: message,n    stack: error.stack,n    statusCode,n    path: req.path,n    method: req.method,n    timestamp: new Date().toISOString()n  });nn  res.status(statusCode).json({n    success: false,n    error: {n      message,n      statusCode,n      ...(process.env.NODE_ENV === 'development' && { stack: error.stack })n    }n  });n};nnexport const notFoundHandler = (req: Request, res: Response) => {n  res.status(404).json({n    success: false,n    error: {n      message: `Route ${req.originalUrl} not found`,n      statusCode: 404n    }n  });n};
+import { Request, Response, NextFunction } from 'express';
+import { logger } from '../config/logger';
+
+export interface ApiError extends Error {
+  statusCode?: number;
+  isOperational?: boolean;
+}
+
+export const errorHandler = (
+  error: ApiError,
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const statusCode = error.statusCode || 500;
+  const message = error.message || 'Internal Server Error';
+
+  logger.error('API Error', {
+    error: message,
+    statusCode,
+    stack: error.stack,
+    url: req.url,
+    method: req.method,
+    ip: req.ip
+  });
+
+  res.status(statusCode).json({
+    success: false,
+    error: message,
+    ...(process.env.NODE_ENV === 'development' && { stack: error.stack })
+  });
+};
+
+export const notFoundHandler = (req: Request, res: Response) => {
+  res.status(404).json({
+    success: false,
+    error: `Route ${req.originalUrl} not found`
+  });
+};

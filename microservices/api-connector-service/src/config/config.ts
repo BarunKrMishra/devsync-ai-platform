@@ -15,6 +15,14 @@ export const config = {
   openaiApiKey: process.env.OPENAI_API_KEY || '',
   anthropicApiKey: process.env.ANTHROPIC_API_KEY || '',
   
+  // API Connector specific
+  rateLimitPerMinute: parseInt(process.env.RATE_LIMIT_PER_MINUTE || '100', 10),
+  maxRetries: parseInt(process.env.MAX_RETRIES || '3', 10),
+  timeout: parseInt(process.env.TIMEOUT || '30000', 10),
+  supportedServices: [
+    'slack', 'jira', 'github', 'google', 'stripe', 'twilio', 'sendgrid', 'aws'
+  ],
+  
   // Monitoring
   telemetryEnabled: process.env.TELEMETRY_ENABLED === 'true',
   jaegerAgentHost: process.env.JAEGER_AGENT_HOST || 'localhost',

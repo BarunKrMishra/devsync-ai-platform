@@ -1,6 +1,6 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { config } from '../config/config';
-import logger from '../config/logger';
+import { logger } from '../config/logger';
 
 export interface ConnectorRequest {
   service: string;

@@ -1,1 +1,13 @@
-import rateLimit from 'express-rate-limit';nnexport const rateLimiter = rateLimit({n  windowMs: 60 * 1000, // 1 minuten  max: 100, // Limit each IP to 100 requests per windowMsn  message: {n    success: false,n    error: {n      message: 'Too many project requests from this IP, please try again later.',n      statusCode: 429n    }n  },n  standardHeaders: true,n  legacyHeaders: false,n  handler: (req, res) => {n    res.status(429).json({n      success: false,n      error: {n        message: 'Too many project requests from this IP, please try again later.',n        statusCode: 429n      }n    });n  }n});
+import rateLimit from 'express-rate-limit';
+import { config } from '../config/config';
+
+export const rateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: config.rateLimitPerMinute || 100,
+  message: {
+    success: false,
+    error: 'Too many requests from this IP, please try again later.'
+  },
+  standardHeaders: true,
+  legacyHeaders: false
+});
