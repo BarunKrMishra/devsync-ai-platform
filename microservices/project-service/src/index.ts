@@ -3,7 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import { config } from './config/config';
-import logger from './config/logger';
+import { logger } from './config/logger';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 import { rateLimiter } from './middleware/rateLimiter';
 import { healthCheck } from './middleware/healthCheck';
