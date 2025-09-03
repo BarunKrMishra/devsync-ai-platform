@@ -1,53 +1,59 @@
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
-import morgan from 'morgan';
+import compression from 'compression';
+import rateLimit from 'express-rate-limit';
 import { config } from './config/config';
-import logger from './config/logger';
-import { errorHandler, notFoundHandler } from './middleware/errorHandler';
-import { apiConnectorRateLimiter } from './middleware/rateLimiter';
-import { healthCheck } from './middleware/healthCheck';
-import connectorsRouter from './routes/connectors';
+import { logger } from './config/logger';
 
 const app = express();
-const PORT = config.port;
 
-// Security middleware
+// Middleware
 app.use(helmet());
-app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
-  credentials: true
-}));
-
-// Logging middleware
-app.use(morgan('combined', {
-  stream: {
-    write: (message: string) => logger.info(message.trim())
-  }
-}));
-
-// Body parsing middleware
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(cors());
+app.use(compression());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Rate limiting
-app.use(apiConnectorRateLimiter);
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 50 // limit each IP to 50 requests per windowMs
+});
+app.use(limiter);
 
 // Health check endpoint
-app.get('/health', healthCheck);
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    status: 'healthy',
+    service: 'api-connector-service',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  });
+});
 
-// API routes
-app.use('/api/connectors', connectorsRouter);
+// Basic routes
+app.get('/', (req, res) => {
+  res.json({
+    message: 'DevSync API Connector Service',
+    version: '1.0.0',
+    status: 'running'
+  });
+});
 
-// Error handling middleware
-app.use(notFoundHandler);
-app.use(errorHandler);
+// API Connector endpoints
+app.post('/connect', (req, res) => {
+  res.json({
+    message: 'API connection endpoint',
+    status: 'ready',
+    note: 'Implementation pending'
+  });
+});
 
 // Start server
-app.listen(PORT, () => {
-  logger.info(`🚀 API Connector Service running on port ${PORT}`);
-  logger.info(`📊 Health check available at http://localhost:${PORT}/health`);
-  logger.info(`🔗 API endpoints available at http://localhost:${PORT}/api/connectors`);
+app.listen(config.port, () => {
+  logger.info(`API Connector Service running on port ${config.port}`);
+  console.log(`🔌 API Connector Service started on port ${config.port}`);
 });
 
 export default app;
