@@ -10,6 +10,8 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install --omit=dev
 COPY --from=builder /app/.next ./.next
+# Create public directory and copy if it exists
+RUN mkdir -p ./public
 COPY --from=builder /app/public ./public
 EXPOSE 3000
 CMD ["npm", "start"]
