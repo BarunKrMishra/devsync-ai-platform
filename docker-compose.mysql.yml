@@ -14,7 +14,7 @@ volumes:
 services:
   # Core Infrastructure - Using MySQL instead of PostgreSQL
   mysql:
-    image: mysql:8.0
+    image: mysql:5.7
     container_name: devsync-mysql
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
@@ -82,7 +82,7 @@ services:
     image: grafana/grafana:10.0.0
     container_name: devsync-grafana
     ports:
-      - "3000:3000"
+      - "3015:3000"
     environment:
       GF_SECURITY_ADMIN_PASSWORD: admin
     volumes:
@@ -330,7 +330,7 @@ services:
       dockerfile: Dockerfile
     container_name: devsync-frontend
     ports:
-      - "3000:3000"
+      - "3015:3000"
     environment:
       - NODE_ENV=production
       - NEXT_PUBLIC_API_URL=http://api-gateway:3000
