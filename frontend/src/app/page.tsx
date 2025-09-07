@@ -89,7 +89,15 @@ export default function Home() {
                   🚀 Start Free Trial
                 </a>
               </Button>
-              <Button size="lg" variant="outline" className="border-2 border-gray-300 hover:border-blue-500 hover:bg-blue-50 transition-all duration-300 transform hover:scale-105 px-8 py-4 text-lg">
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="border-2 border-gray-300 hover:border-blue-500 hover:bg-blue-50 transition-all duration-300 transform hover:scale-105 px-8 py-4 text-lg"
+                onClick={() => {
+                  // Scroll to demo section
+                  document.getElementById('demo-section')?.scrollIntoView({ behavior: 'smooth' });
+                }}
+              >
                 <span className="flex items-center gap-2">
                   ▶️ Watch Demo
                 </span>
@@ -255,7 +263,7 @@ export default function Home() {
       </section>
 
       {/* Product Demo Storyboard */}
-      <section className="py-20 bg-white">
+      <section id="demo-section" className="py-20 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import Projects from './Projects';
+import AITranslator from './AITranslator';
 import ERD from './ERD';
 import APIs from './APIs';
 import Connectors from './Connectors';
@@ -12,6 +13,7 @@ import Monitor from './Monitor';
 const navigation = [
   { id: 'overview', name: 'Overview', icon: '🏠' },
   { id: 'projects', name: 'Projects', icon: '📁' },
+  { id: 'translator', name: 'AI Translator', icon: '🤖' },
   { id: 'erd', name: 'ERD', icon: '🗂️' },
   { id: 'apis', name: 'APIs', icon: '🔌' },
   { id: 'connectors', name: 'Connectors', icon: '🔗' },
@@ -25,6 +27,8 @@ export default function DashboardLayout() {
     switch (activeTab) {
       case 'projects':
         return <Projects />;
+      case 'translator':
+        return <AITranslator />;
       case 'erd':
         return <ERD />;
       case 'apis':

@@ -82,9 +82,10 @@ services:
     image: grafana/grafana:10.0.0
     container_name: devsync-grafana
     ports:
-      - "3000:3000"
+      - "3015:3015"
     environment:
       GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_SERVER_HTTP_PORT: 3015
     volumes:
       - grafana-data:/var/lib/grafana
     networks:
@@ -97,12 +98,12 @@ services:
       dockerfile: Dockerfile
     container_name: devsync-api-gateway
     ports:
-      - "3000:3000"
+      - "3009:3009"
     environment:
       NODE_ENV: production
-      PORT: 3000
+      PORT: 3009
       JWT_SECRET: supersecretjwtkey
-      FRONTEND_URL: http://localhost:3001
+      FRONTEND_URL: http://localhost:3000
       AUTH_SERVICE_URL: http://auth-service:3001
       AI_TRANSLATOR_SERVICE_URL: http://ai-translator-service:3002
       API_CONNECTOR_SERVICE_URL: http://api-connector-service:3003
@@ -123,7 +124,7 @@ services:
     networks:
       - devsync-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:3009/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -330,11 +331,18 @@ services:
       dockerfile: Dockerfile
     container_name: devsync-frontend
     ports:
-      - "3001:3000"
+      - "3000:3000"
     environment:
       NODE_ENV: production
-      NEXT_PUBLIC_API_URL: http://localhost:3000
+      NEXT_PUBLIC_API_URL: http://localhost:3009
       NEXT_PUBLIC_AUTH_URL: http://localhost:3001
       NEXT_PUBLIC_AI_TRANSLATOR_URL: http://localhost:3002
+    depends_on:
+      - api-gateway
     networks:
       - devsync-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3

@@ -32,7 +32,7 @@ Transform natural language requirements into production-ready applications with 
 
 4. **Access the services:**
    - **Frontend**: http://localhost:3000
-   - **API Gateway**: http://localhost:3000
+   - **API Gateway**: http://localhost:3009
    - **Documentation**: http://localhost:3000/api-docs
 
 ## 🏗️ Architecture
@@ -251,7 +251,7 @@ Each microservice can be configured independently:
 
 ### Dashboards
 
-- **Grafana**: http://localhost:3000 (admin/admin)
+- **Grafana**: http://localhost:3015 (admin/admin)
 - **Jaeger**: http://localhost:16686
 - **Prometheus**: http://localhost:9090
 
@@ -259,7 +259,7 @@ Each microservice can be configured independently:
 
 ```bash
 # Check all services
-curl http://localhost:3000/health
+curl http://localhost:3009/health
 
 # Individual service health
 curl http://localhost:3001/health  # Auth Service
@@ -274,7 +274,7 @@ curl http://localhost:3003/health  # API Connector
 curl http://localhost:3008/metrics
 
 # Custom application metrics
-curl http://localhost:3000/api/metrics
+curl http://localhost:3009/api/metrics
 ```
 
 ## 🤝 Contributing

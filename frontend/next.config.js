@@ -2,15 +2,21 @@
 const nextConfig = {
   output: 'standalone',
   env: {
-    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000',
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3009',
   },
   async rewrites() {
     return [
       {
         source: '/api/:path*',
-        destination: 'http://localhost:3000/:path*',
+        destination: `${process.env.NEXT_PUBLIC_API_URL}/:path*`,
       },
     ];
+  },
+  images: {
+    unoptimized: true,
+  },
+  experimental: {
+    outputFileTracingRoot: undefined,
   },
 };
 
