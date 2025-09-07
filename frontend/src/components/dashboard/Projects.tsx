@@ -69,7 +69,7 @@ export default function Projects() {
   };
 
   // Mock data for development (remove when API is ready)
-  const mockProjects: Project[] = projects || [
+  const mockProjects: Project[] = (Array.isArray(projects) ? projects : []) || [
     {
       id: '1',
       name: 'E-commerce Platform',
