@@ -256,7 +256,11 @@ export default function Projects() {
       >
         {editingProject && (
           <ProjectForm
-            initialData={editingProject}
+            initialData={{
+              name: editingProject.name,
+              description: editingProject.description,
+              requirements: editingProject.requirements.toString()
+            }}
             onSubmit={handleUpdateProject}
             onCancel={() => setEditingProject(null)}
             loading={updateProjectMutation.loading}
