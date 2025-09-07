@@ -1,3 +1,5 @@
+'use client';
+
 // Custom hooks for API integration
 import { useState, useEffect } from 'react';
 import { apiClient, ApiResponse } from '@/lib/api';

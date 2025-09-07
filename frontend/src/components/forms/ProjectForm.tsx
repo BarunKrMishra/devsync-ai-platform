@@ -1,3 +1,5 @@
+'use client';
+
 // Project creation and editing form
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';

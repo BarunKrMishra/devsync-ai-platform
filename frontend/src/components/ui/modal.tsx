@@ -1,3 +1,5 @@
+'use client';
+
 // Modal component for forms and confirmations
 import React, { useEffect } from 'react';
 import { cn } from '@/lib/utils';
