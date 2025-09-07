@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Modal } from '@/components/ui/modal';
 import { LoadingButton } from '@/components/ui/loading';
 import { useToast } from '@/components/ui/toast';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface SignUpModalProps {
   isOpen: boolean;
@@ -22,6 +23,7 @@ export function SignUpModal({ isOpen, onClose, onSwitchToSignIn, onSignUpSuccess
   });
   const [loading, setLoading] = useState(false);
   const { showToast } = useToast();
+  const { signUp } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,33 +41,17 @@ export function SignUpModal({ isOpen, onClose, onSwitchToSignIn, onSignUpSuccess
     setLoading(true);
 
     try {
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          password: formData.password
-        }),
-      });
+      const success = await signUp(formData.name, formData.email, formData.password);
 
-      const data = await response.json();
-
-      if (response.ok) {
-        // Store token in localStorage
-        localStorage.setItem('authToken', data.token);
-        localStorage.setItem('user', JSON.stringify(data.user));
-        
+      if (success) {
         showToast('Account created successfully!', 'success');
-        onSignUpSuccess(data.user);
+        onSignUpSuccess({ name: formData.name, email: formData.email }); // Pass user data
         onClose();
         
         // Reset form
         setFormData({ name: '', email: '', password: '', confirmPassword: '' });
       } else {
-        showToast(data.message || 'Sign up failed', 'error');
+        showToast('Sign up failed. Please try again.', 'error');
       }
     } catch (error) {
       showToast('Network error. Please try again.', 'error');

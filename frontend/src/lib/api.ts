@@ -56,17 +56,51 @@ class ApiClient {
 
   // Authentication
   async login(email: string, password: string) {
-    return this.request('/auth/login', {
+    const response = await this.request('/auth/login', {
       method: 'POST',
       body: JSON.stringify({ email, password }),
     });
+    
+    if (response.success && response.data) {
+      const { token, user } = response.data as any;
+      this.setToken(token);
+      return { success: true, data: { token, user } };
+    }
+    
+    return response;
   }
 
   async register(userData: { name: string; email: string; password: string }) {
-    return this.request('/auth/register', {
+    const response = await this.request('/auth/register', {
       method: 'POST',
       body: JSON.stringify(userData),
     });
+    
+    if (response.success && response.data) {
+      const { token, user } = response.data as any;
+      this.setToken(token);
+      return { success: true, data: { token, user } };
+    }
+    
+    return response;
+  }
+
+  async verifyToken() {
+    return this.request('/auth/verify');
+  }
+
+  setToken(token: string) {
+    this.token = token;
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('auth_token', token);
+    }
+  }
+
+  clearToken() {
+    this.token = null;
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('auth_token');
+    }
   }
 
   // Projects

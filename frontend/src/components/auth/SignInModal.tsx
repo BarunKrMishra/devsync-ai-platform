@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Modal } from '@/components/ui/modal';
 import { LoadingButton } from '@/components/ui/loading';
 import { useToast } from '@/components/ui/toast';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface SignInModalProps {
   isOpen: boolean;
@@ -20,35 +21,24 @@ export function SignInModal({ isOpen, onClose, onSwitchToSignUp, onSignInSuccess
   });
   const [loading, setLoading] = useState(false);
   const { showToast } = useToast();
+  const { signIn } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
+      const success = await signIn(formData.email, formData.password);
 
-      const data = await response.json();
-
-      if (response.ok) {
-        // Store token in localStorage
-        localStorage.setItem('authToken', data.token);
-        localStorage.setItem('user', JSON.stringify(data.user));
-        
+      if (success) {
         showToast('Signed in successfully!', 'success');
-        onSignInSuccess(data.user);
+        onSignInSuccess({ email: formData.email }); // Pass user data
         onClose();
         
         // Reset form
         setFormData({ email: '', password: '' });
       } else {
-        showToast(data.message || 'Sign in failed', 'error');
+        showToast('Sign in failed. Please check your credentials.', 'error');
       }
     } catch (error) {
       showToast('Network error. Please try again.', 'error');
