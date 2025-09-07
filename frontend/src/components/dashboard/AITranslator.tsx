@@ -38,10 +38,11 @@ export default function AITranslator() {
       });
 
       if (response.success && response.data) {
+        const data = response.data as any; // Type assertion for API response
         setResults(prev => [...prev, {
           type: selectedType,
-          content: response.data.content || response.data,
-          metadata: response.data.metadata
+          content: data.content || data,
+          metadata: data.metadata
         }]);
         showToast('Translation completed successfully!', 'success');
       } else {
