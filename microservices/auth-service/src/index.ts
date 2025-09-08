@@ -120,7 +120,7 @@ app.post('/register', async (req, res) => {
 
   } catch (error) {
     logger.error('Registration error:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: 'Internal server error'
     });
@@ -190,7 +190,7 @@ app.post('/login', async (req, res) => {
 
   } catch (error) {
     logger.error('Login error:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: 'Internal server error'
     });
@@ -245,7 +245,7 @@ app.get('/verify', async (req, res) => {
 
   } catch (error) {
     logger.error('Token verification error:', error);
-    res.status(401).json({
+    return res.status(401).json({
       success: false,
       error: 'Invalid token'
     });
@@ -277,7 +277,7 @@ app.post('/logout', async (req, res) => {
 
   } catch (error) {
     logger.error('Logout error:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: 'Internal server error'
     });
