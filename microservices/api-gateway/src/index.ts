@@ -33,6 +33,24 @@ app.get('/health', (req, res) => {
   });
 });
 
+// Test endpoint for debugging
+app.get('/test', (req, res) => {
+  res.status(200).json({
+    message: 'API Gateway is working!',
+    timestamp: new Date().toISOString(),
+    services: {
+      auth: AUTH_SERVICE_URL,
+      aiTranslator: AI_TRANSLATOR_SERVICE_URL,
+      apiConnector: API_CONNECTOR_SERVICE_URL,
+      codegen: CODEGEN_SERVICE_URL,
+      project: PROJECT_SERVICE_URL,
+      notification: NOTIFICATION_SERVICE_URL,
+      storage: STORAGE_SERVICE_URL,
+      monitoring: MONITORING_SERVICE_URL
+    }
+  });
+});
+
 // Service URLs from environment variables
 const AUTH_SERVICE_URL = process.env.AUTH_SERVICE_URL || 'http://auth-service:3001';
 const AI_TRANSLATOR_SERVICE_URL = process.env.AI_TRANSLATOR_SERVICE_URL || 'http://ai-translator-service:3002';
@@ -134,6 +152,20 @@ app.listen(config.port, () => {
   logger.info(`API Gateway running on port ${config.port}`);
   console.log(`🚀 API Gateway started on port ${config.port}`);
   console.log(`📡 Proxying auth requests to: ${AUTH_SERVICE_URL}`);
+  console.log(`🌐 Health check available at: http://localhost:${config.port}/health`);
+});
+
+// Error handling for uncaught exceptions
+process.on('uncaughtException', (error) => {
+  logger.error('Uncaught Exception:', error);
+  console.error('Uncaught Exception:', error);
+  process.exit(1);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  logger.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  process.exit(1);
 });
 
 export default app;
