@@ -68,14 +68,14 @@ const proxyOptions = {
   pathRewrite: {
     '^/api': '', // Remove /api prefix when forwarding
   },
-  onError: (err, req, res) => {
+  onError: (err: any, req: any, res: any) => {
     logger.error(`Proxy error for ${req.url}:`, err);
     res.status(500).json({
       success: false,
       error: 'Service temporarily unavailable'
     });
   },
-  onProxyReq: (proxyReq, req, res) => {
+  onProxyReq: (proxyReq: any, req: any, res: any) => {
     logger.info(`Proxying ${req.method} ${req.url} to ${proxyReq.getHeader('host')}${proxyReq.path}`);
   }
 };
