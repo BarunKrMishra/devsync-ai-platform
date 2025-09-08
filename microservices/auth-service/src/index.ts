@@ -110,7 +110,7 @@ app.post('/register', async (req, res) => {
     // Return user data (without password)
     const { password: _, ...userWithoutPassword } = user;
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       data: {
         token,
@@ -180,7 +180,7 @@ app.post('/login', async (req, res) => {
     // Return user data (without password)
     const { password: _, ...userWithoutPassword } = user;
 
-    res.json({
+    return res.json({
       success: true,
       data: {
         token,
@@ -236,7 +236,7 @@ app.get('/verify', async (req, res) => {
     // Return user data (without password)
     const { password: _, ...userWithoutPassword } = session.user;
 
-    res.json({
+    return res.json({
       success: true,
       data: {
         user: userWithoutPassword
@@ -270,7 +270,7 @@ app.post('/logout', async (req, res) => {
       where: { token }
     });
 
-    res.json({
+    return res.json({
       success: true,
       message: 'Logged out successfully'
     });
